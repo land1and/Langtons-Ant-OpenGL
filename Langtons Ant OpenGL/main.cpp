@@ -40,23 +40,27 @@ int main() {
     i2 ant_position(GRID_SIZE / 2, GRID_SIZE / 2);
     i2 ant_direction(-1, 0);
     int iterations = 0;
+    bool finished = false;
     while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+        if (finished) {
+            continue;
+        }
         for (int i = 0; i < ITERATIONS_PER_FRAME; i++) {
             const int index = ant_position.y * GRID_SIZE + ant_position.x;
             ant_direction = grid[index] ? i2(ant_direction.y, -ant_direction.x) : i2(-ant_direction.y, ant_direction.x);
             ant_position += ant_direction;
             grid[index] = grid[index] ? 0 : 1;
             if (ant_position.x < 0 || ant_position.x > GRID_SIZE_MINUS_ONE || ant_position.y < 0 || ant_position.y > GRID_SIZE_MINUS_ONE) {
-                glfwSetWindowShouldClose(window, 1);
+                printf("finished with %d iterations\n", iterations);
+                finished = true;
                 break;
             }
             iterations++;
         }
         draw_pixels(grid);
         glfwSwapBuffers(window);
-        glfwPollEvents();
     }
-    printf("finished with %d iterations", iterations);
     glfwTerminate();
     return 0;
 }
